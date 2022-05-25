@@ -123,7 +123,7 @@ async function run() {
         })
 
         // Get reviews from db
-        app.get('/reviews', verifyJWT, async (req, res) => {
+        app.get('/reviews', async (req, res) => {
             const reviews = await reviewCollection.find().toArray();
             res.send(reviews);
         })
