@@ -53,6 +53,13 @@ async function run() {
             res.send(product);
         })
 
+        // Post products into db
+        app.post('/products', async (req, res) => {
+            const newProduct = req.body;
+            const result = await productCollection.insertOne(newProduct);
+            res.send(result);
+        })
+
         // Create orders
         app.post('/orders', async (req, res) => {
             const order = req.body;
@@ -129,7 +136,7 @@ async function run() {
         })
 
         // Post review into db
-        app.post('/reviews', verifyJWT, async (req, res) => {
+        app.post('/reviews', async (req, res) => {
             const review = req.body;
             const result = await reviewCollection.insertOne(review);
             res.send(result);
