@@ -35,6 +35,7 @@ async function run() {
         const productCollection = client.db('manufacturerDB').collection('parts');
         const orderCollection = client.db('manufacturerDB').collection('orders');
         const userCollection = client.db('manufacturerDB').collection('users');
+        const reviewCollection = client.db('manufacturerDB').collection('reviews');
 
         // Get products
         app.get('/products', async (req, res) => {
@@ -119,6 +120,19 @@ async function run() {
             const user = await userCollection.findOne({ email: email });
             const isAdmin = user.role === 'admin';
             res.send({ admin: isAdmin })
+        })
+
+        // Get reviews from db
+        app.get('/reviews', verifyJWT, async (req, res) => {
+            const reviews = await reviewCollection.find().toArray();
+            res.send(reviews);
+        })
+
+        // Post review into db
+        app.post('/reviews', verifyJWT, async (req, res) => {
+            const review = req.body;
+            const result = await reviewCollection.insertOne(review);
+            res.send(result);
         })
 
     }
