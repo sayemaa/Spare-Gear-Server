@@ -17,23 +17,24 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         await client.connect();
-        const partsCollection = client.db('manufacturerDB').collection('parts');
+        const productCollection = client.db('manufacturerDB').collection('parts');
         const orderCollection = client.db('manufacturerDB').collection('orders');
+        const userCollection = client.db('manufacturerDB').collection('users');
 
-        // Get parts
-        app.get('/parts', async (req, res) => {
+        // Get products
+        app.get('/products', async (req, res) => {
             const query = {};
-            const cursor = partsCollection.find(query);
-            const parts = await cursor.toArray();
-            res.send(parts);
+            const cursor = productCollection.find(query);
+            const products = await cursor.toArray();
+            res.send(products);
         });
 
-        // Get each parts
-        app.get('/parts/:id', async (req, res) => {
+        // Get each products
+        app.get('/products/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
-            const eachParts = await partsCollection.findOne(query);
-            res.send(eachParts);
+            const product = await productCollection.findOne(query);
+            res.send(product);
         })
 
         // Create orders
@@ -42,6 +43,15 @@ async function run() {
             const result = orderCollection.insertOne(order);
             res.send(result);
         })
+
+        // Get Orders
+        app.get('/orders', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const orders = await orderCollection.find(query).toArray();
+            res.send(orders);
+        })
+
     }
     finally {
 
