@@ -55,6 +55,14 @@ async function run() {
             res.send(product);
         })
 
+        //Delete Product
+        app.delete('/products/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await productCollection.deleteOne(query);
+            res.send(result);
+        })
+
         // Post products into db
         app.post('/products', async (req, res) => {
             const newProduct = req.body;
@@ -67,6 +75,13 @@ async function run() {
             const order = req.body;
             const result = orderCollection.insertOne(order);
             res.send(result);
+        })
+
+        // Get all orders/ orders of all users
+        app.get('/orders', verifyJWT, async (req, res) => {
+            const query = {};
+            const orders = await orderCollection.find(query).toArray();
+            res.send(orders);
         })
 
         // Get Orders by email
@@ -89,6 +104,14 @@ async function run() {
             const query = { _id: ObjectId(id) };
             const order = await orderCollection.findOne(query);
             res.send(order);
+        })
+
+        // Delete each order
+        app.delete('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await orderCollection.deleteOne(query);
+            res.send(result);
         })
 
         // Patch/Update order
