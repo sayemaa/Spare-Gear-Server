@@ -37,6 +37,7 @@ async function run() {
         const orderCollection = client.db('manufacturerDB').collection('orders');
         const userCollection = client.db('manufacturerDB').collection('users');
         const reviewCollection = client.db('manufacturerDB').collection('reviews');
+        const paymentCollection = client.db('manufacturerDB').collection('payments');
 
         // Get products
         app.get('/products', async (req, res) => {
@@ -88,6 +89,23 @@ async function run() {
             const query = { _id: ObjectId(id) };
             const order = await orderCollection.findOne(query);
             res.send(order);
+        })
+
+        // Patch/Update order
+        app.patch('/orders/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const payment = req.body;
+            const filter = { _id: ObjectId(id) };
+            const updateDoc = {
+                $set: {
+                    paid: true,
+                    transactionId: payment.transactionId
+                },
+            };
+            const result = await paymentCollection.insertOne(payment);
+            const updatedOrder = await orderCollection.updateOne(filter, updateDoc);
+            res.send(updatedOrder)
+
         })
 
         // PUT user into db
