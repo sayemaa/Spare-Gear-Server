@@ -145,10 +145,37 @@ async function run() {
             res.send({ result, token });
         })
 
+        // Put/ Update user
+        app.put('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = req.body;
+            const filter = { email: email };
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    name: user.name,
+                    email: user.email,
+                    education: user.education,
+                    address: user.address,
+                    linkedIn: user.linkedIn,
+                    phone: user.phone
+                }
+            }
+            const result = await userCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        })
+
         // Get all Users
         app.get('/user', verifyJWT, async (req, res) => {
             const users = await userCollection.find().toArray();
             res.send(users);
+        })
+
+        // Get each user
+        app.get('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = await userCollection.findOne({ email: email })
+            res.send(user);
         })
 
         // Make Admin
